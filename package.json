@@ -1,0 +1,79 @@
+{
+    "name": "@convictionsai/api",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "build": "tsc",
+        "start:local": "concurrently --handle-input \"wait-on dist/main.js && ENVIRONMENT=local nodemon dist/main.js\" \"tsc -w -p tsconfig.json\" ",
+        "start:development": "concurrently --handle-input \"wait-on dist/main.js && ENVIRONMENT=development TZ=UTC nodemon dist/main.js\" \"tsc -w -p tsconfig.json\" ",
+        "release": "rm -rf dist && tsc && npm version patch && npm publish --access=private",
+        "test": "jest --setupFiles dotenv/config --detectOpenHandles",
+        "test:seed": "jest --setupFiles dotenv/config --detectOpenHandles --forceExit test/seed/BillingSeed.ts"
+    },
+    "dependencies": {
+        "@nestjs.pro/amqp": "^0.0.38",
+        "@nestjs.pro/common": "^1.0.155",
+        "@nestjs.pro/logger": "^0.0.3",
+        "@nestjs/common": "^9.0.9",
+        "@nestjs/core": "^9.0.9",
+        "@nestjs/swagger": "^6.0.5",
+        "@nestjs/typeorm": "^9.0.1",
+        "@nvr-ai/common": "^1.2.15",
+        "@nvr-ai/models": "^20.0.56",
+        "@nvr-ai/s3": "^0.0.1",
+        "amqplib": "^0.10.2",
+        "aws-sdk": "^2.1214.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.13.2",
+        "date-fns": "^2.29.3",
+        "dotenv": "^16.0.1",
+        "mysql": "^2.18.1",
+        "openai": "^3.2.1",
+        "rxjs": "^7.5.6",
+        "swagger-ui-express": "^4.5.0",
+        "typeorm": "^0.3.7"
+    },
+    "devDependencies": {
+        "@nestjs/testing": "^9.0.9",
+        "@nvr-ai/testing": "^0.0.4",
+        "@types/amqplib": "^0.8.2",
+        "@types/jest": "^28.1.6",
+        "@types/node": "^18.7.3",
+        "axios": "^1.2.6",
+        "concurrently": "^7.3.0",
+        "jest": "^28.1.3",
+        "nodemon": "^2.0.19",
+        "prettier": "^2.8.4",
+        "supertest": "^6.2.4",
+        "ts-jest": "^28.0.7",
+        "typescript": "^4.7.4",
+        "wait-on": "^6.0.1"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "test",
+        "testRegex": "Test.ts$|Seed.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "collectCoverageFrom": [
+            "**/*.(t|j)s"
+        ],
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
+    },
+    "prettier": {
+        "printWidth": 200,
+        "tabWidth": 4,
+        "bracketSameLine": true,
+        "singleQuote": true,
+        "arrowParens": "avoid",
+        "semi": true,
+        "trailingComma": "none",
+        "bracketSpacing": true
+    }
+}

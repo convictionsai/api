@@ -1,0 +1,40 @@
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: "environment"
+        default: "dev"
+  push:
+    tags:
+      - "*"
+
+name: deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    environment:
+      name: "${{ github.event.inputs.environment }}"
+      url: "https://${{ github.event.inputs.environment }}.nvr.ai"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u nvr-ai --password-stdin
+
+      - name: Docker build
+        run: docker build --build-arg NPM_TOKEN=${{ secrets.GITHUB_TOKEN }} -t ghcr.io/${{ github.repository }}:${{github.ref_name}} .
+
+      - name: Docker push
+        run: docker push ghcr.io/${{ github.repository }}:${{github.ref_name}}
+
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
