@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
 import { DataSource, Repository } from 'typeorm';
+import { getPromptFromBook } from '../../Data/BookData';
 import { QAHitType } from '../../Models/Search/QA/QAHitType';
 import { QARequest } from '../../Models/Search/QA/QARequest';
 import { QAResult } from '../../Models/Search/QA/QAResult';
@@ -43,9 +44,11 @@ export class QAService {
         let result: QAResult;
         let response: CreateCompletionResponse;
 
+        const prompt = `${request.prompt} ${getPromptFromBook(['matthew', 'genesis', 'Deuteronomy'])}`;
+
         try {
             if (!nocache) {
-                result = await this.getByPrompt(request.prompt);
+                result = await this.getByPrompt(prompt);
                 console.log('cache hit', result);
                 return { ...result, hit: QAHitType.CACHE };
             }
@@ -55,9 +58,9 @@ export class QAService {
             response = (
                 await this.openai.createCompletion({
                     model: 'text-davinci-003',
-                    prompt: `${request.prompt} (based on the bible)`,
+                    prompt: prompt,
                     temperature: 0,
-                    max_tokens: 100,
+                    max_tokens: 1000,
                     top_p: 1,
                     frequency_penalty: 0,
                     presence_penalty: 0
