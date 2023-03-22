@@ -18,9 +18,6 @@
         "@nestjs/core": "^9.0.9",
         "@nestjs/swagger": "^6.0.5",
         "@nestjs/typeorm": "^9.0.1",
-        "@nvr-ai/common": "^1.2.15",
-        "@nvr-ai/models": "^20.0.56",
-        "@nvr-ai/s3": "^0.0.1",
         "amqplib": "^0.10.2",
         "aws-sdk": "^2.1214.0",
         "class-transformer": "^0.5.1",
@@ -35,7 +32,6 @@
     },
     "devDependencies": {
         "@nestjs/testing": "^9.0.9",
-        "@nvr-ai/testing": "^0.0.4",
         "@types/amqplib": "^0.8.2",
         "@types/jest": "^28.1.6",
         "@types/node": "^18.7.3",
