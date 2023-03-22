@@ -1,7 +1,6 @@
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export class EntityBase {
-
     @PrimaryGeneratedColumn('uuid')
     public id?: string;
 
@@ -10,5 +9,4 @@ export class EntityBase {
 
     @UpdateDateColumn()
     public stampUpdated?: Date;
-
 }

@@ -11,7 +11,7 @@ export class BibleCreate {
     @Length(1, 255)
     public description: string;
 
-    @ApiProperty({ enum: Language})
+    @ApiProperty({ enum: Language })
     @IsEnum(Language)
     public language: Language;
 }

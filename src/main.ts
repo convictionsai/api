@@ -1,12 +1,12 @@
 require('dotenv').config({ path: `.env.${process.env.ENVIRONMENT}` });
 
-import { Server } from '@nestjs.pro/common/dist/server/Server';
-import { ServerConfig } from '@nestjs.pro/common/dist/server/ServerConfig';
-import { ServerEnvironment } from '@nvr-ai/common/Server/ServerEnvironment';
-import { ServerUtilities } from '@nvr-ai/common/Server/ServerUtilities';
 import { APIModule } from './APIModule';
+import { Server } from './Server/Server';
+import { ServerConfig } from './Server/ServerConfig';
+import { ServerEnvironment } from './Server/ServerEnvironment';
+import { ServerUtilities } from './Server/ServerUtilities';
 
-Server.bootstrap(
+void Server.bootstrap(
     new ServerConfig({
         name: 'API',
         port: Number.parseInt(process.env.PORT),
