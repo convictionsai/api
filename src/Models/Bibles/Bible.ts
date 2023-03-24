@@ -15,6 +15,6 @@ export class Bible extends EntityBase {
     public description: string;
 
     @ApiProperty({ enum: Language })
-    @Column({ enum: Language })
+    @Column({ type: 'enum', enum: Language })
     public language: Language;
 }
