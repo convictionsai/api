@@ -1,181 +1,184 @@
 terraform {
-
-    backend "gcs" {
-
-        bucket = "matthewdavis-sandbox-infra"
-        prefix = "nvrai/dev/cameras.tfstate"
-
+  required_providers {
+    civo = {
+      source  = "civo/civo"
+      version = "1.0.31" # Use the last available version
     }
-
+  }
 }
 
-variable "host" {}
-variable "token" {}
-variable "image" {}
-variable "env" {}
-variable "name" {
-
-    default = "cameras"
-
+provider "civo" {
+  token = var.civo_api_token
 }
-provider "kubernetes" {
 
-    host     = var.host
-    token    = var.token
-    insecure = true
-
+data "civo_kubernetes_cluster" "my-cluster" {
+  name = "sandbox"
 }
 
 locals {
-
-    env = yamldecode(var.env)
-
+  kubeconfig_map = yamldecode(data.civo_kubernetes_cluster.my-cluster.kubeconfig)
 }
 
-resource "kubernetes_deployment" "deployment" {
-
-    metadata {
-
-        name      = var.name
-        namespace = "nvrai"
-
-        labels = {
-
-            app = var.name
-
-        }
-
-    }
-
-    spec {
-
-        replicas = 1
-
-        selector {
-
-            match_labels = {
-
-                app = var.name
-
-            }
-
-        }
-
-        template {
-
-            metadata {
-
-                name = var.name
-
-                labels = {
-
-                    app = var.name
-
-                }
-
-            }
-
-            spec {
-
-                termination_grace_period_seconds = 0
-
-                image_pull_secrets {
-
-                    name = "gcr-image-pull"
-
-                }
-
-                node_selector = {
-
-                    role = "services"
-
-                }
-
-                container {
-
-                    name  = var.name
-                    image = var.image
-
-                    port {
-
-                        container_port = 8080
-                        protocol       = "TCP"
-
-                    }
-
-                    resources {
-
-                        requests = {
-
-                            cpu    = "100m"
-                            memory = "50Mi"
-
-                        }
-
-                        limits = {
-
-                            cpu    = "500m"
-                            memory = "300Mi"
-
-                        }
-
-                    }
-
-                    dynamic "env" {
-
-                        for_each = local.env
-
-                        content {
-
-                            name  = env.key
-                            value = env.value
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
+provider "kubernetes" {
+  host                   = data.civo_kubernetes_cluster.my-cluster.api_endpoint
+  client_key             = base64decode(local.kubeconfig_map.users[0].user.client-key-data)
+  cluster_ca_certificate = base64decode(local.kubeconfig_map.clusters[0].cluster.certificate-authority-data)
+  client_certificate     = base64decode(local.kubeconfig_map.users[0].user.client-certificate-data)
 }
 
-resource "kubernetes_service" "service" {
-
-    metadata {
-
-        name      = var.name
-        namespace = "nvrai"
-
-        labels = {
-
-            app = var.name
-
-        }
-
-    }
-
-    spec {
-
-        selector = {
-
-            app = var.name
-
-        }
-
-        port {
-
-            port        = 8080
-            target_port = 8080
-            protocol    = "TCP"
-
-        }
-
-    }
-
+terraform {
+  backend "s3" {
+    endpoint                    = "https://objectstore.nyc1.civo.com"
+    bucket                      = "states"
+    key                         = "api.tfstate"
+    region                      = "NYC1"
+    skip_region_validation      = true
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    force_path_style            = true
+  }
 }
 
+module "deployment-backend-api" {
+
+  source = "github.com/convictionsai/terraform-kubernetes-deployment"
+
+    repo = {
+        type      = "backend"
+        namespace = "convictionsai"
+        name      = "api"
+        version   = "0.0.1"
+        resources = {
+            replicas = 1
+            cpu      = "500m"
+            memory   = "512Mi"
+        }
+        networking = {
+            ports = [
+                {
+                    name          = "http"
+                    containerPort = 8080
+                    targetPort    = 8080
+                    protocol      = "TCP"
+
+                }
+            ]
+            ingress = {
+                hostname = "api.convictions.ai"
+                path     = "/"
+            }
+        }
+    }
+
+    environment_variables = {
+
+    }
+}
+
+resource "kubernetes_service_account" "cicd" {
+  metadata {
+    name      = "cicd"
+    namespace = "convictionsai"
+  }
+}
+
+resource "kubernetes_cluster_role" "cicd" {
+  metadata {
+    name = "cicd"
+  }
+
+  rule {
+    api_groups = [
+      ""
+    ]
+    resources = [
+      "componentstatuses"
+    ]
+    verbs = [
+      "list"
+    ]
+  }
+
+  rule {
+    api_groups = [
+      ""
+    ]
+    resources = [
+      "componentstatuses"
+    ]
+    verbs = [
+      "list"
+    ]
+  }
+
+  rule {
+    api_groups = [
+      "networking.k8s.io"
+    ]
+    resources = [
+      "ingresses"
+    ]
+    verbs = [
+      "get",
+      "create",
+      "update",
+      "delete"
+    ]
+  }
+
+  rule {
+    api_groups = [
+      ""
+    ]
+    resources = [
+      "services"
+    ]
+    verbs = [
+      "get",
+      "create",
+      "update",
+      "delete"
+    ]
+  }
+
+  rule {
+    api_groups = [
+      "apps"
+    ]
+    resources = [
+      "deployments"
+    ]
+    verbs = [
+      "get",
+      "create",
+      "update",
+      "delete"
+    ]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "cicd" {
+  metadata {
+    name = "cicd"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cicd"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "cicd"
+    namespace = "convictionsai"
+
+  }
+}
+
+
+variable "civo_api_token" {
+  description = "Civo API token"
+  type        = string
+  sensitive   = true
+}

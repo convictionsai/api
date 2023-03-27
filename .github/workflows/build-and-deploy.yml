@@ -1,3 +1,5 @@
+name: "Build-Publish-Deploy API"
+
 on:
   repository_dispatch:
   workflow_dispatch:
@@ -6,10 +8,15 @@ on:
         type: "environment"
         default: "development"
   push:
+    branches:
+      - main
     tags:
       - "*"
-
-name: deploy
+  pull_request:
+    branches:
+      - main
+    tags:
+      - "*"
 
 jobs:
   deploy:
@@ -54,6 +61,30 @@ jobs:
           build-args: |
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             CONFIGURATION=${{ env.CONFIGURATION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        id: init
+        run: terraform init -backend-config="access_key=${{ secrets.BACKEND_CIVO_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.BACKEND_CIVO_SECRET_KEY }}"
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan -no-color -input=false \
+            -var "civo_api_token=${{ secrets.CIVO_API_TOKEN }}"
+
+      - name: Terraform apply
+        id: apply
+        if: github.event_name == 'push'
+        run: |
+          terraform apply --auto-approve -no-color \
+            -var "civo_api_token=${{ secrets.CIVO_API_TOKEN }}"      
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
