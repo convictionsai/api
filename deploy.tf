@@ -17,11 +17,11 @@ variable "host" {}
 variable "token" {}
 variable "openai_api_key" {}
 
-#provider "kubernetes" {
-#    host     = var.host
-#    token    = var.token
-#    insecure = true
-#}
+provider "kubernetes" {
+    host     = var.host
+    token    = var.token
+    insecure = true
+}
 #
 #locals {
 #    settings = {
