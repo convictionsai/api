@@ -82,7 +82,7 @@ jobs:
             token: ${{ secrets.KUBERNETES_TOKEN }}
             openai_api_key: ${{ secrets.OPENAI_API_KEY }}
 
-#       - uses: sarisia/actions-status-discord@v1
-#         if: always()
-#         with:
-#           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}

@@ -16,6 +16,11 @@ variable "tag" {}
 variable "host" {}
 variable "token" {}
 variable "openai_api_key" {}
+variable "db_hostname" {}
+variable "db_port" {}
+variable "db_username" {}
+variable "db_password" {}
+variable "rabbitmq_uri" {}
 
 provider "kubernetes" {
     host     = var.host
@@ -54,10 +59,11 @@ locals {
         }
         env = {
             PORT           = 8080
-            DB_HOST        = "mysql"
-            DB_PORT        = 3306
-            DB_USERNAME    = "changeme"
-            DB_PASSWORD    = "changeme"
+            DB_HOST        = var.db_hostname
+            DB_PORT        = var.db_port
+            DB_USERNAME    = var.db_username
+            DB_PASSWORD    = var.db_password
+            RABBITMQ_URI   = var.rabbitmq_uri
             OPENAI_API_KEY = var.openai_api_key
         }
     }
