@@ -1,11 +1,4 @@
 terraform {
-    required_providers {
-        civo = {
-            source  = "civo/civo"
-            version = "1.0.31"
-            # Use the last available version
-        }
-    }
     backend "s3" {
         endpoint                    = "https://objectstore.nyc1.civo.com"
         bucket                      = "states"
@@ -24,12 +17,8 @@ variable "host" {}
 variable "token" {}
 variable "openai_api_key" {}
 
-data "civo_kubernetes_cluster" "my-cluster" {
-    name = "sandbox"
-}
-
 provider "kubernetes" {
-    host     = data.civo_kubernetes_cluster.my-cluster.api_endpoint
+    host     = var.host
     token    = var.token
     insecure = true
 }
