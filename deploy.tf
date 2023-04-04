@@ -18,7 +18,8 @@ variable "token" {}
 variable "openai_api_key" {}
 
 provider "kubernetes" {
-    host     = var.host
+    host     = "https://212.2.242.219:6443"
+
     token    = var.token
     insecure = true
 }
