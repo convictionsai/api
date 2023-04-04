@@ -115,11 +115,11 @@ jobs:
       - name: deploy
         uses: mateothegreat/action-terraformer@0.0.1
         with:
-          init: |
+          init:
             access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
             secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
           apply:
-            env: |
+            env:
               name: api
               tag:
               host: ${{ secrets.KUBERNETES_SERVER }}
