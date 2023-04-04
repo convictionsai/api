@@ -66,7 +66,7 @@ locals {
 }
 
 module "deploy" {
-    source   = "git::ssh://git@github.com:convictionsai/terraform-kubernetes-deployment.git?ref=0.0.2"
+    source   = "https://@github.com/convictionsai/terraform-kubernetes-deployment.git?ref=0.0.2"
     settings = local.settings
 }
 
