@@ -11,7 +11,7 @@ terraform {
 variable "host" {}
 variable "token" {}
 variable "tag" {}
-variable "env" {}
+variable "openai_api_key" {}
 variable "name" {
 
     default = "cameras"
@@ -60,6 +60,7 @@ locals {
             DB_PORT     = 3306
             DB_USERNAME = "changeme"
             DB_PASSWORD = "changeme"
+            OPENAI_API_KEY = var.openai_api_key
         }
     }
 }

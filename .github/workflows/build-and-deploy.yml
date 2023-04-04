@@ -89,11 +89,8 @@ jobs:
           terraform apply -var "name=api" \
                           -var "host=${{ secrets.KUBERNETES_SERVER }}" \
                           -var "token=${{ secrets.KUBERNETES_TOKEN }}" \
-                          -var "env=${{ env.env }}" \
+                          -var "openai_api_key=${{ secrets.OPENAI_API_KEY }}" \
                           --auto-approve
-        with:
-          env:
-            openai_api_key: ${{ secrets.OPENAI_API_KEY }}
 
 #       - uses: sarisia/actions-status-discord@v1
 #         if: always()
