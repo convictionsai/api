@@ -118,8 +118,9 @@ jobs:
         uses: mateothegreat/action-terraformer@main
         with:
           init: |
-            access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
-            secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
+            backend-config:
+              access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
+              secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
           apply: |
             name: api
             tag: ${{github.ref_name}}
