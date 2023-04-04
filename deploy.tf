@@ -1,17 +1,16 @@
 terraform {
 
-    backend "gcs" {
-
-        bucket = "matthewdavis-sandbox-infra"
-        prefix = "nvrai/dev/cameras.tfstate"
-
+    backend "s3" {
+        endpoint = "https://objectstore.nyc1.civo.com"
+        bucket = "states"
+        prefix = "convictionsai/dev/api.tfstate"
     }
 
 }
 
 variable "host" {}
 variable "token" {}
-variable "image" {}
+variable "tag" {}
 variable "env" {}
 variable "name" {
 
@@ -27,155 +26,46 @@ provider "kubernetes" {
 }
 
 locals {
-
-    env = yamldecode(var.env)
-
+    settings = {
+        name      = var.name
+        namespace = "convictionsai"
+        type      = "backend"
+        version   = var.tag
+        resources = {
+            replicas = 1
+            requests = {
+                cpu    = "500m"
+                memory = "500Mi"
+            }
+            limits = {
+                cpu    = "500m"
+                memory = "500Mi"
+            }
+        }
+        networking = {
+            ingress = {
+                hostname = "api.convictions.ai"
+                path     = "/"
+            }
+            ports = [
+                {
+                    name = "http"
+                    port = 8080
+                }
+            ]
+        }
+        env = {
+            PORT        = 8080
+            DB_HOST     = "mysql"
+            DB_PORT     = 3306
+            DB_USERNAME = "changeme"
+            DB_PASSWORD = "changeme"
+        }
+    }
 }
 
-resource "kubernetes_deployment" "deployment" {
-
-    metadata {
-
-        name      = var.name
-        namespace = "nvrai"
-
-        labels = {
-
-            app = var.name
-
-        }
-
-    }
-
-    spec {
-
-        replicas = 1
-
-        selector {
-
-            match_labels = {
-
-                app = var.name
-
-            }
-
-        }
-
-        template {
-
-            metadata {
-
-                name = var.name
-
-                labels = {
-
-                    app = var.name
-
-                }
-
-            }
-
-            spec {
-
-                termination_grace_period_seconds = 0
-
-                image_pull_secrets {
-
-                    name = "gcr-image-pull"
-
-                }
-
-                node_selector = {
-
-                    role = "services"
-
-                }
-
-                container {
-
-                    name  = var.name
-                    image = var.image
-
-                    port {
-
-                        container_port = 8080
-                        protocol       = "TCP"
-
-                    }
-
-                    resources {
-
-                        requests = {
-
-                            cpu    = "100m"
-                            memory = "50Mi"
-
-                        }
-
-                        limits = {
-
-                            cpu    = "500m"
-                            memory = "300Mi"
-
-                        }
-
-                    }
-
-                    dynamic "env" {
-
-                        for_each = local.env
-
-                        content {
-
-                            name  = env.key
-                            value = env.value
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-}
-
-resource "kubernetes_service" "service" {
-
-    metadata {
-
-        name      = var.name
-        namespace = "nvrai"
-
-        labels = {
-
-            app = var.name
-
-        }
-
-    }
-
-    spec {
-
-        selector = {
-
-            app = var.name
-
-        }
-
-        port {
-
-            port        = 8080
-            target_port = 8080
-            protocol    = "TCP"
-
-        }
-
-    }
-
+module "deploy" {
+    source   = "git::ssh://git@github.com:convictionsai/terraform-kubernetes-deployment.git?ref=0.0.2"
+    settings = local.settings
 }
 

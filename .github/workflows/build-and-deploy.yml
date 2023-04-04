@@ -1,6 +1,8 @@
+name: "Build-Push / Deploy (merge) APP to Kubernetes"
+
 on:
-  repository_dispatch:
   workflow_dispatch:
+  repository_dispatch:
     inputs:
       environment:
         type: "environment"
@@ -8,11 +10,16 @@ on:
   push:
     tags:
       - "*"
+  pull_request:
+    tags:
+      - "*"
 
-name: deploy
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,7 +35,6 @@ jobs:
       - run: |
             if [ "${{ github.event.inputs.environment  }}" = "" ]; then CONFIGURATION="development" || CONFIGURATION="${{ github.event.inputs.environment }}"; fi
             echo CONFIGURATION="$CONFIGURATION" >> $GITHUB_ENV
-
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -55,7 +61,41 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             CONFIGURATION=${{ env.CONFIGURATION }}
 
-      - uses: sarisia/actions-status-discord@v1
-        if: always()
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform init
+        id: init
+        run: terraform init -backend-config="access_key=${{ secrets.BACKEND_CIVO_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.BACKEND_CIVO_SECRET_KEY }}"
+
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt
+
+      - name: Terraform validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        id: plan
+        run: |
+          terraform plan
+      - name: Terraform apply
+        run: |
+          terraform apply -var "name=api" \
+                          -var "host=${{ secrets.KUBERNETES_SERVER }}" \
+                          -var "token=${{ secrets.KUBERNETES_TOKEN }}" \
+                          -var "env=${{ env.env }}" \
+                          --auto-approve
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          env:
+            openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+
+#       - uses: sarisia/actions-status-discord@v1
+#         if: always()
+#         with:
+#           webhook: ${{ secrets.DISCORD_WEBHOOK }}
