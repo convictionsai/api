@@ -10,28 +10,27 @@ terraform {
         force_path_style            = true
     }
 }
-variable "env" {}
 
-#variable "host" {}
-#variable "token" {}
-#variable "tag" {}
-#variable "openai_api_key" {}
-#variable "name" {}
+variable "name" {}
+variable "tag" {}
+variable "host" {}
+variable "token" {}
+variable "openai_api_key" {}
 
 provider "kubernetes" {
 
-    host     = var.env.host
-    token    = var.env.token
+    host     = var.host
+    token    = var.token
     insecure = true
 
 }
 
 locals {
     settings = {
-        name      = var.env.name
+        name      = var.name
         namespace = "convictionsai"
         type      = "backend"
-        version   = var.env.tag
+        version   = var.tag
         resources = {
             replicas = 1
             requests = {
@@ -61,7 +60,7 @@ locals {
             DB_PORT     = 3306
             DB_USERNAME = "changeme"
             DB_PASSWORD = "changeme"
-            OPENAI_API_KEY = var.env.openai_api_key
+            OPENAI_API_KEY = var.openai_api_key
         }
     }
 }
