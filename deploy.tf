@@ -1,13 +1,15 @@
 terraform {
     backend "s3" {
-        endpoint = "https://objectstore.nyc1.civo.com"
-        region = "us-east-1"
-        bucket = "states"
-        key = "convictionsai/dev/api.tfstate"
-        prefix = "convictionsai/dev/api.tfstate"
+        endpoint                    = "https://objectstore.nyc1.civo.com"
+        bucket                      = "states"
+        key                         = "api.tfstate"
+        region                      = "NYC1"
+        skip_region_validation      = true
+        skip_credentials_validation = true
+        skip_metadata_api_check     = true
+        force_path_style            = true
     }
 }
-
 variable "env" {}
 
 #variable "host" {}
