@@ -1,11 +1,10 @@
 terraform {
-
     backend "s3" {
         endpoint = "https://objectstore.nyc1.civo.com"
         bucket = "states"
+        key = "convictionsai/dev/api.tfstate"
         prefix = "convictionsai/dev/api.tfstate"
     }
-
 }
 
 variable "host" {}
