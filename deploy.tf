@@ -22,52 +22,48 @@ provider "kubernetes" {
     token    = var.token
     insecure = true
 }
-#
-#locals {
-#    settings = {
-#        name      = var.name
-#        namespace = "convictionsai"
-#        type      = "backend"
-#        version   = var.tag
-#        resources = {
-#            replicas = 1
-#            requests = {
-#                cpu    = "500m"
-#                memory = "500Mi"
-#            }
-#            limits = {
-#                cpu    = "500m"
-#                memory = "500Mi"
-#            }
-#        }
-#        networking = {
-#            ingress = {
-#                hostname = "api.convictions.ai"
-#                path     = "/"
-#            }
-#            ports = [
-#                {
-#                    name = "http"
-#                    port = 8080
-#                }
-#            ]
-#        }
-#        env = {
-#            PORT           = 8080
-#            DB_HOST        = "mysql"
-#            DB_PORT        = 3306
-#            DB_USERNAME    = "changeme"
-#            DB_PASSWORD    = "changeme"
-#            OPENAI_API_KEY = var.openai_api_key
-#        }
-#    }
-#}
-#
-#module "deploy" {
-#    source   = "github.com/convictionsai/terraform-kubernetes-deployment.git?ref=0.0.2"
-#    settings = local.settings
-#}
 
-output "asdf" {
-    value = base64encode(var.host)
+locals {
+    settings = {
+        name      = var.name
+        namespace = "convictionsai"
+        type      = "backend"
+        version   = var.tag
+        resources = {
+            replicas = 1
+            requests = {
+                cpu    = "500m"
+                memory = "500Mi"
+            }
+            limits = {
+                cpu    = "500m"
+                memory = "500Mi"
+            }
+        }
+        networking = {
+            ingress = {
+                hostname = "api.convictions.ai"
+                path     = "/"
+            }
+            ports = [
+                {
+                    name = "http"
+                    port = 8080
+                }
+            ]
+        }
+        env = {
+            PORT           = 8080
+            DB_HOST        = "mysql"
+            DB_PORT        = 3306
+            DB_USERNAME    = "changeme"
+            DB_PASSWORD    = "changeme"
+            OPENAI_API_KEY = var.openai_api_key
+        }
+    }
+}
+
+module "deploy" {
+    source   = "github.com/convictionsai/terraform-kubernetes-deployment.git?ref=0.0.2"
+    settings = local.settings
 }

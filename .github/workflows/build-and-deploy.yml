@@ -113,8 +113,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - run: |
-          echo ${{ secrets.KUBERNETES_SERVER }} | base64
+
       - name: deploy
         uses: mateothegreat/action-terraformer@main
         with:
