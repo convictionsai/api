@@ -116,12 +116,5 @@ jobs:
         uses: mateothegreat/action-terraformer@main
         with:
           init: |
-            access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
-            secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
-          apply: |
-            name: api
-            tag:
-            host: ${{ secrets.KUBERNETES_SERVER }}
-            token: ${{ secrets.KUBERNETES_TOKEN }}
-            openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-
+            access_key: a
+            secret_key: b
