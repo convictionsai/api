@@ -69,5 +69,5 @@ variable "openai_api_key" {}
 #}
 
 output "asdf" {
-    value = var.host
+    value = base64encode(var.host)
 }
