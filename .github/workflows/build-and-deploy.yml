@@ -116,5 +116,6 @@ jobs:
         uses: mateothegreat/action-terraformer@main
         with:
           init: |
-            access_key: a
-            secret_key: b
+            access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
+            secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
+
