@@ -1,4 +1,4 @@
-name: "Build-Push / Deploy (merge) APP to Kubernetes"
+name: "release"
 
 on:
   workflow_dispatch:
@@ -81,6 +81,11 @@ jobs:
             host: ${{ secrets.KUBERNETES_SERVER }}
             token: ${{ secrets.KUBERNETES_TOKEN }}
             openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+            db_hostname: ${{ secrets.DB_HOSTNAME }}
+            db_port: ${{ secrets.DB_PORT }}
+            db_username: ${{ secrets.DB_USERNAME }}
+            db_password: ${{ secrets.DB_PASSWORD }}
+            rabbitmq_uri: ${{ secrets.RABBITMQ_URI }}
 
       - uses: sarisia/actions-status-discord@v1
         if: always()
