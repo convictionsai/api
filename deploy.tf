@@ -1,4 +1,11 @@
 terraform {
+    required_providers {
+        civo = {
+            source  = "civo/civo"
+            version = "1.0.31"
+            # Use the last available version
+        }
+    }
     backend "s3" {
         endpoint                    = "https://objectstore.nyc1.civo.com"
         bucket                      = "states"
@@ -17,12 +24,14 @@ variable "host" {}
 variable "token" {}
 variable "openai_api_key" {}
 
-provider "kubernetes" {
+data "civo_kubernetes_cluster" "my-cluster" {
+    name = "sandbox"
+}
 
-    host     = var.host
+provider "kubernetes" {
+    host     = data.civo_kubernetes_cluster.my-cluster.api_endpoint
     token    = var.token
     insecure = true
-
 }
 
 locals {
@@ -55,11 +64,11 @@ locals {
             ]
         }
         env = {
-            PORT        = 8080
-            DB_HOST     = "mysql"
-            DB_PORT     = 3306
-            DB_USERNAME = "changeme"
-            DB_PASSWORD = "changeme"
+            PORT           = 8080
+            DB_HOST        = "mysql"
+            DB_PORT        = 3306
+            DB_USERNAME    = "changeme"
+            DB_PASSWORD    = "changeme"
             OPENAI_API_KEY = var.openai_api_key
         }
     }

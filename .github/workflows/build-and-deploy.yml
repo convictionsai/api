@@ -122,6 +122,7 @@ jobs:
               access_key: ${{ secrets.BACKEND_CIVO_ACCESS_KEY }}
               secret_key: ${{ secrets.BACKEND_CIVO_SECRET_KEY }}
           apply: |
+            civo_api_token: ${{ secrets.CIVO_API_TOKEN }}
             name: api
             tag: ${{github.ref_name}}
             host: ${{ secrets.KUBERNETES_SERVER }}
