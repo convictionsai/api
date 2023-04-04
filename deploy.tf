@@ -1,6 +1,7 @@
 terraform {
     backend "s3" {
         endpoint = "https://objectstore.nyc1.civo.com"
+        region = "us-east-1"
         bucket = "states"
         key = "convictionsai/dev/api.tfstate"
         prefix = "convictionsai/dev/api.tfstate"
