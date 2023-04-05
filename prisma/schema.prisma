@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:mysql@127.0.0.1:3306/convictionsai"
+  // url      = env("DATABASE_URL")
+}
+
+enum Language {
+  EN
+}
+
+model Bible {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  language    Language
+  Book        Book[]
+  Chapter     Chapter[]
+  Verse       Verse[]
+}
+
+model Book {
+  id          String    @id @default(uuid())
+  bible       Bible     @relation(fields: [bibleId], references: [id])
+  bibleId     String
+  name        String
+  description String
+  Chapter     Chapter[]
+  Verse       Verse[]
+}
+
+model Chapter {
+  id          String  @id @default(uuid())
+  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bibleId     String
+  book        Book    @relation(fields: [bookId], references: [id])
+  bookId      String
+  number      Int
+  name        String?
+  description String?
+}
+
+model Verse {
+  id          String  @id @default(uuid())
+  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bibleId     String
+  book        Book    @relation(fields: [bookId], references: [id])
+  bookId      String
+  number      Int
+  name        String?
+  description String?
+  content     String
+}

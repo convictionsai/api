@@ -1,22 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, Unique } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, Unique } from 'typeorm';
 import { EntityBase } from '../../../../EntityBase';
 import { Chapter } from '../Chapter';
 
-@Entity('bibles_books_chapters')
-@Unique(['bible', 'name'])
+@Entity('bibles_books_chapters_verses')
+@Unique([ 'chapter', 'content' ])
 export class Verse extends EntityBase {
     @ApiProperty()
     @ManyToOne(() => Chapter)
-    public chapter: Chapter;
+    public chapter?: Chapter;
 
     @ApiProperty()
     @Column()
-    public name: string;
+    public number: number;
 
     @ApiProperty()
-    @Column()
-    public description: string;
+    @Column({ nullable: true })
+    public description?: string;
 
     @ApiProperty()
     @Column()

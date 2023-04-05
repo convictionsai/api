@@ -3,6 +3,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BiblesController } from './Bibles/BiblesController';
 import { BiblesService } from './Bibles/BiblesService';
+import { BooksService } from './Bibles/Books/BooksService';
+import { ChaptersService } from './Bibles/Books/Chapters/ChaptersService';
 import { TYPEORM_CONFIG } from './Models/TypeOrmConfig';
 import { QAController } from './Search/QA/QAController';
 import { QAService } from './Search/QA/QAService';
@@ -32,7 +34,17 @@ import { SearchService } from './Search/SearchService';
             ]
         })
     ],
-    providers: [BiblesService, SearchService, QAService],
-    controllers: [BiblesController, SearchController, QAController]
+    providers: [
+        BiblesService,
+        BooksService,
+        ChaptersService,
+        SearchService,
+        QAService
+    ],
+    controllers: [
+        BiblesController,
+        SearchController,
+        QAController
+    ]
 })
 export class APIModule {}

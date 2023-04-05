@@ -1,25 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { from, Observable } from 'rxjs';
 import { DataSource, Repository } from 'typeorm';
+import { PrismaService } from '../Data/PrismaService';
 import { Bible } from '../Models/Bibles/Bible';
 import { BibleCreate } from '../Models/Bibles/BibleCreate';
 
 @Injectable()
 export class BiblesService {
-    private readonly repository: Repository<Bible>;
-
-    public constructor(private readonly dataSource: DataSource) {
-        this.repository = dataSource.getRepository(Bible);
+    public constructor(private readonly prismaSerivce: PrismaService) {
     }
 
-    public search(): Observable<Array<Bible>> {
-        return from(
-            this.repository.find({
-                order: {
-                    name: 'ASC'
-                }
-            })
-        );
+    public search(): Promise<Array<Bible>> {
+        return this.prismaSerivce.bible.findMany()
     }
 
     public getById(id: string): Observable<Bible> {

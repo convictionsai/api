@@ -1,5 +1,7 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
+import { SearchOptions } from '../Models/Search/SearchOptions';
 import { SearchService } from './SearchService';
 
 @ApiTags('Search')
@@ -7,10 +9,10 @@ import { SearchService } from './SearchService';
 export class SearchController {
     public constructor(private readonly searchService: SearchService) {}
 
-    // @Get('/')
-    // public search(): Observable<Array<Bible>> {
-    //     return this.searchService.search();
-    // }
+    @Get('/options')
+    public search(): Promise<SearchOptions> {
+        return this.searchService.getOptions();
+    }
     // @Post('/qa')
     // public qa(@Body() request: QARequest): Observable<QAResult> {
     //     return this.searchService.qa(request).pipe(first());
