@@ -61,7 +61,6 @@ locals {
         env = {
             ENVIRONMENT    = var.environnment
             PORT           = 8080
-            DB_SYNCHRONIZE = true
             DB_HOSTNAME    = var.db_hostname
             DB_PORT        = var.db_port
             DB_USERNAME    = var.db_username
