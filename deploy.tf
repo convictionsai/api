@@ -11,6 +11,7 @@ terraform {
     }
 }
 
+variable "environnment" {}
 variable "name" {}
 variable "tag" {}
 variable "host" {}
@@ -58,6 +59,7 @@ locals {
             ]
         }
         env = {
+            ENVIRONMENT    = var.environnment
             PORT           = 8080
             DB_HOSTNAME    = var.db_hostname
             DB_PORT        = var.db_port
