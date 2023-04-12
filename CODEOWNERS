@@ -1,0 +1,7 @@
+.github/ @mateothegreat @sarony11 @altmas5
+*.tf @mateothegreat @sarony11 @altmas5
+Dockerfile @mateothegreat @sarony11 @altmas5
+docker-compose.yaml @mateothegreat @sarony11 @altmas5
+/src/ @mateothegreat @atmosuwiryo
+/test/ @mateothegreat @atmosuwiryo
+/prisma/ @mateothegreat @atmosuwiryo
