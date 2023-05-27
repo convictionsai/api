@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { hash } from 'bcrypt';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
 import { BooksService } from '../../Bibles/Books/BooksService';
 import { getPromptFromBook } from '../../Data/BookData';
@@ -73,6 +74,7 @@ export class QAService {
         try {
             if (!nocache) {
                 console.log(prompt);
+                // TODO: Use hash instead of prompt
                 result = await this.getByPrompt(prompt);
                 console.log('cache hit', result);
                 return { ...result, hit: QAHitType.CACHE };
@@ -111,7 +113,7 @@ export class QAService {
                         QAResultToBook: {
                             create: qaResultToBook
                         },
-                        hash: 'hash',
+                        hash: await hash(prompt, 10),
                         hit: QAHitType.LIVE
 
                     }
