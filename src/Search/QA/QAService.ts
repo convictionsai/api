@@ -4,7 +4,7 @@ import { BooksService } from '../../Bibles/Books/BooksService';
 import { getPromptFromBook } from '../../Data/BookData';
 import { QARequest } from '../../Dto/Search/QA/QARequest';
 
-import { Prisma, Book, QAResult, QAResultStatus, QAHitType } from '@prisma/client';
+import { Prisma, QAResult, QAResultStatus, QAHitType } from '@prisma/client';
 import { PrismaService } from '../../Data/PrismaService';
 
 @Injectable()

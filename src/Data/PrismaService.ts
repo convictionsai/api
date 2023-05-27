@@ -1,5 +1,5 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -13,18 +13,17 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
             ],
         });
     }
+
     async onModuleInit() {
         await this.$connect();
     }
 
-    async enableEventBasedLogging() {
+    async subscribeToEventBasedLogging() {
+
         // @ts-ignore
-        this.$on('query', async (e) => {
-            // @ts-ignore
+        this.$on('query', async (e: Prisma.QueryEvent) => {
             console.log('Query: ' + e.query);
-            // @ts-ignore
             console.log('Params: ' + JSON.stringify(e.params));
-            // @ts-ignore
             console.log('Duration: ' + e.duration + 'ms');
         });
     }
@@ -35,3 +34,5 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
         });
     }
 }
+
+// Logging Reference: https://www.prisma.io/docs/concepts/components/prisma-client/logging

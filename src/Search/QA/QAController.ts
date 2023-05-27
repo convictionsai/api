@@ -2,7 +2,7 @@ import { Body, Controller, ParseBoolPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { QARequest } from '../../Dto/Search/QA/QARequest';
 import { QAService } from './QAService';
-import { Prisma, QAResult } from '@prisma/client';
+import { QAResult } from '@prisma/client';
 
 @ApiTags('Question & Answering')
 @Controller('/search/qa')
