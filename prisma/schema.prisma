@@ -15,6 +15,18 @@ enum Language {
   EN
 }
 
+enum QAResultStatus {
+    ACTIVE
+    EXPIRED
+    BLOCKED
+    FAILED
+}
+
+enum QAHitType {
+    CACHE
+    LIVE
+}
+
 model Bible {
   id          String    @id @default(uuid())
   name        String
@@ -26,13 +38,14 @@ model Bible {
 }
 
 model Book {
-  id          String    @id @default(uuid())
-  bible       Bible     @relation(fields: [bibleId], references: [id])
-  bibleId     String
-  name        String
-  description String
-  Chapter     Chapter[]
-  Verse       Verse[]
+  id                String    @id @default(uuid())
+  bible             Bible     @relation(fields: [bibleId], references: [id])
+  bibleId           String
+  name              String
+  description       String
+  Chapter           Chapter[]
+  Verse             Verse[]
+  QAResultToBook    QAResultToBook[]
 }
 
 model Chapter {
@@ -55,5 +68,25 @@ model Verse {
   number      Int
   name        String?
   description String?
-  content     String
+  content     String  @db.Text
+}
+
+model QAResult {
+  id                String  @id @default(uuid())
+  hash              String
+  prompt            String  @db.Text
+  answer            String  @db.Text
+  tokens            Int
+  time              Int
+  status            QAResultStatus
+  hit               QAHitType
+  QAResultToBook    QAResultToBook[]
+}
+
+model QAResultToBook {
+  id          String  @id @default(uuid())
+  qAResultId  String
+  QAResult    QAResult  @relation(fields: [qAResultId], references: [id])
+  bookId      String
+  Book        Book      @relation(fields: [bookId], references: [id])
 }

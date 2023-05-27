@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, Length } from 'class-validator';
+import { IsArray, IsOptional, Length } from 'class-validator';
 
 export class QARequest {
     @ApiProperty()
@@ -7,6 +7,7 @@ export class QARequest {
     public prompt: string;
 
     @ApiProperty()
-    @IsArray({ each: true})
-    public books: string[];
+    @IsArray({ each: true })
+    @IsOptional({ each: true })
+    public books?: string[];
 }

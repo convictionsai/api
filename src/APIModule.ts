@@ -1,11 +1,10 @@
 import { AMQPLogLevel, AMQPModule } from '@nestjs.pro/amqp';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { BiblesController } from './Bibles/BiblesController';
 import { BiblesService } from './Bibles/BiblesService';
 import { BooksService } from './Bibles/Books/BooksService';
+import { PrismaService } from './Data/PrismaService';
 import { ChaptersService } from './Bibles/Books/Chapters/ChaptersService';
-import { TYPEORM_CONFIG } from './Models/TypeOrmConfig';
 import { QAController } from './Search/QA/QAController';
 import { QAService } from './Search/QA/QAService';
 import { SearchController } from './Search/SearchController';
@@ -13,7 +12,6 @@ import { SearchService } from './Search/SearchService';
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot(TYPEORM_CONFIG),
         AMQPModule.forRoot({
             logLevel: AMQPLogLevel.ERROR,
             autoConnect: true,
@@ -39,6 +37,7 @@ import { SearchService } from './Search/SearchService';
         BooksService,
         ChaptersService,
         SearchService,
+        PrismaService,
         QAService
     ],
     controllers: [
@@ -47,4 +46,4 @@ import { SearchService } from './Search/SearchService';
         QAController
     ]
 })
-export class APIModule {}
+export class APIModule { }

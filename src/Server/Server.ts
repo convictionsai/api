@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
+import { PrismaService } from '../Data/PrismaService';
 import { ServerConfig } from './ServerConfig';
 
 dotenv.config();
@@ -10,6 +11,12 @@ dotenv.config();
 export class Server {
     public static async bootstrap(config: ServerConfig): Promise<NestExpressApplication> {
         const app = await NestFactory.create<NestExpressApplication>(config.module, config.options);
+
+        const prismaService = app.get(PrismaService);
+
+        await prismaService.enableEventBasedLogging();
+
+        await prismaService.enableShutdownHooks(app);
 
         if (config.cors) {
             app.enableCors(config.cors);
