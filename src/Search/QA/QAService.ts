@@ -9,6 +9,7 @@ import { PrismaService } from '../../Data/PrismaService';
 
 @Injectable()
 export class QAService {
+
     private readonly openai = new OpenAIApi(
         new Configuration({
             apiKey: process.env.OPENAI_API_KEY
@@ -30,7 +31,6 @@ export class QAService {
         return this._qaResult({ id: id });
     }
 
-
     public getByPrompt(prompt: string): Promise<QAResult> {
 
         return this.prismaService.qAResult.findFirstOrThrow({
@@ -38,7 +38,6 @@ export class QAService {
                 prompt: prompt,
             }
         })
-
     }
 
     public async qa(request: QARequest, nocache: boolean): Promise<QAResult> {
@@ -48,7 +47,26 @@ export class QAService {
         let result: QAResult;
         let response: CreateCompletionResponse;
 
-        const prompt = `${request.prompt} (${getPromptFromBook(['matthew', 'genesis', 'Deuteronomy'])})`;
+        const defaultBooks = "matthew genesis Deuteronomy".split(' ');
+
+        let booksIds = [];
+        let books = [];
+
+        if (request.books && request.books.length > 0) {
+            booksIds = request.books;
+            booksIds.forEach(async (book: string) => {
+                const bookObj = await this.booksService.getById(book);
+                books.push(bookObj.name);
+            });
+        } else {
+            books = defaultBooks;
+            defaultBooks.forEach(async (book: string) => {
+                const bookObj = await this.booksService.getByName(book);
+                booksIds.push(bookObj.id);
+            });
+        }
+
+        const prompt = `${request.prompt} (${getPromptFromBook(books)})`;
 
         console.log(nocache);
         try {
@@ -78,9 +96,8 @@ export class QAService {
         }
 
         if (response) {
-            const books = ['4072ab14-d440-485b-b58b-ac295d0ca3ca', 'bd71faa2-b209-473f-a86f-4b1ab8c15a12', 'dc20fe41-9989-44a7-a764-a683fc289fd9'];
-            const qaResultToBook = books.map((book: string) => {
-                return { 'bookId': book };
+            const qaResultToBook = booksIds.map((bookId: string) => {
+                return { 'bookId': bookId };
             });
             try {
                 result = await this.prismaService.qAResult.create({
@@ -91,11 +108,6 @@ export class QAService {
                         status: QAResultStatus.ACTIVE,
                         time: Date.now() - start,
                         QAResultToBook: {
-                            // create: [
-                            //     { bookId: '1' },
-                            //     { bookId: '2' },
-                            //     { bookId: '3' }
-                            // ]
                             create: qaResultToBook
                         },
                         hash: 'hash',

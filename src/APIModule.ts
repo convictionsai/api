@@ -2,6 +2,7 @@ import { AMQPLogLevel, AMQPModule } from '@nestjs.pro/amqp';
 import { Module } from '@nestjs/common';
 import { BiblesController } from './Bibles/BiblesController';
 import { BiblesService } from './Bibles/BiblesService';
+import { BooksController } from './Bibles/Books/BooksController';
 import { BooksService } from './Bibles/Books/BooksService';
 import { PrismaService } from './Data/PrismaService';
 import { ChaptersService } from './Bibles/Books/Chapters/ChaptersService';
@@ -42,6 +43,7 @@ import { SearchService } from './Search/SearchService';
     ],
     controllers: [
         BiblesController,
+        BooksController,
         SearchController,
         QAController
     ]

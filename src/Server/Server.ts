@@ -14,7 +14,8 @@ export class Server {
 
         const prismaService = app.get(PrismaService);
 
-        await prismaService.subscribeToEventBasedLogging();
+        // Uncomment this to enable event-based logging
+        // await prismaService.subscribeToEventBasedLogging();
 
         await prismaService.enableShutdownHooks(app);
 

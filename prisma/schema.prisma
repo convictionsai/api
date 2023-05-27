@@ -35,11 +35,13 @@ model Bible {
   Book        Book[]
   Chapter     Chapter[]
   Verse       Verse[]
+
+  @@unique([name, language])
 }
 
 model Book {
   id                String    @id @default(uuid())
-  bible             Bible     @relation(fields: [bibleId], references: [id])
+  bible             Bible     @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bibleId           String
   name              String
   description       String
@@ -50,9 +52,9 @@ model Book {
 
 model Chapter {
   id          String  @id @default(uuid())
-  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bible       Bible   @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bibleId     String
-  book        Book    @relation(fields: [bookId], references: [id])
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookId      String
   number      Int
   name        String?
@@ -61,9 +63,9 @@ model Chapter {
 
 model Verse {
   id          String  @id @default(uuid())
-  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bible       Bible   @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bibleId     String
-  book        Book    @relation(fields: [bookId], references: [id])
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookId      String
   number      Int
   name        String?
@@ -86,7 +88,7 @@ model QAResult {
 model QAResultToBook {
   id          String  @id @default(uuid())
   qAResultId  String
-  QAResult    QAResult  @relation(fields: [qAResultId], references: [id])
+  QAResult    QAResult  @relation(fields: [qAResultId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookId      String
-  Book        Book      @relation(fields: [bookId], references: [id])
+  Book        Book      @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

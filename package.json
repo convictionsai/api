@@ -2,6 +2,9 @@
     "name": "@convictionsai/api",
     "version": "0.0.1",
     "private": true,
+    "prisma": {
+       "seed": "ts-node prisma/seed.ts"
+    },
     "scripts": {
         "build": "tsc",
         "start:local": "concurrently --handle-input \"wait-on dist/main.js && ENVIRONMENT=local nodemon dist/main.js\" \"tsc -w -p tsconfig.json\" ",
