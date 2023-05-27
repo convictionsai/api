@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Bible } from '@prisma/client';
 import { PrismaService } from '../Data/PrismaService';
-// import { from, Observable } from 'rxjs';
 
 @Injectable()
 export class BiblesService {

@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { Prisma, Bible } from '@prisma/client';
 import { ApiTags } from '@nestjs/swagger';
-// import { Observable } from 'rxjs';
 import { BiblesService } from './BiblesService';
 
 @ApiTags('Bibles')

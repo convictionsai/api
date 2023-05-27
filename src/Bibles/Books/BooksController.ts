@@ -3,7 +3,6 @@ import { Prisma, Book } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { BooksService } from './BooksService';
 import { BookRequest } from '../../Dto/Bibles/Books/BookRequest';
-// import { UUID } from 'crypto';
 
 @ApiTags('Books')
 @Controller('/books')

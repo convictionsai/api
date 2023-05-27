@@ -48,25 +48,26 @@ export class QAService {
         let response: CreateCompletionResponse;
 
         const defaultBooks = "matthew genesis Deuteronomy".split(' ');
+        const allBooks = await this.booksService.search();
 
         let booksIds = [];
-        let books = [];
+        let selectedBooks = [];
 
         if (request.books && request.books.length > 0) {
             booksIds = request.books;
-            booksIds.forEach(async (book: string) => {
-                const bookObj = await this.booksService.getById(book);
-                books.push(bookObj.name);
+            booksIds.forEach(async (bookId: string) => {
+                const bookObj = await this.booksService.getById(bookId);
+                selectedBooks.push(bookObj.name);
             });
         } else {
-            books = defaultBooks;
-            defaultBooks.forEach(async (book: string) => {
-                const bookObj = await this.booksService.getByName(book);
+            selectedBooks = defaultBooks;
+            defaultBooks.forEach(async (bookName: string) => {
+                const bookObj = await this.booksService.getByName(bookName);
                 booksIds.push(bookObj.id);
             });
         }
 
-        const prompt = `${request.prompt} (${getPromptFromBook(books)})`;
+        const prompt = `${request.prompt} (${getPromptFromBook(selectedBooks, allBooks)})`;
 
         console.log(nocache);
         try {
