@@ -1,31 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { from, Observable } from 'rxjs';
-import { DataSource, Repository } from 'typeorm';
+import { Prisma, Bible } from '@prisma/client';
 import { PrismaService } from '../Data/PrismaService';
-import { Bible } from '../Models/Bibles/Bible';
-import { BibleCreate } from '../Models/Bibles/BibleCreate';
 
 @Injectable()
 export class BiblesService {
-    public constructor(private readonly prismaSerivce: PrismaService) {
+    public constructor(private readonly prismaService: PrismaService) {
+    }
+
+    private _bible(bibleWHereUniqueInput: Prisma.BibleWhereUniqueInput): Promise<Bible> {
+        return this.prismaService.bible.findUniqueOrThrow({
+            where: bibleWHereUniqueInput,
+        })
+    }
+
+    private _bibles(params: {
+        skip?: number;
+        take?: number;
+        cursor?: Prisma.BibleWhereUniqueInput;
+        where?: Prisma.BibleWhereInput;
+        orderBy?: Prisma.BibleOrderByWithRelationInput;
+    }): Promise<Bible[]> {
+        const { skip, take, cursor, where, orderBy } = params;
+        return this.prismaService.bible.findMany({
+            skip,
+            take,
+            cursor,
+            where,
+            orderBy,
+        })
     }
 
     public search(): Promise<Array<Bible>> {
-        return this.prismaSerivce.bible.findMany()
+        return this._bibles({});
     }
 
-    public getById(id: string): Observable<Bible> {
-        return from(
-            this.repository.findOneOrFail({
-                where: {
-                    id
-                }
-            })
-        );
+    public getById(id: string): Promise<Bible> {
+        return this._bible({ id: id });
     }
 
-    public create(create: BibleCreate): Observable<Bible> {
-        return from(this.repository.save(create));
+    public create(data: Prisma.BibleCreateInput): Promise<Bible> {
+        return this.prismaService.bible.create({
+            data,
+        })
     }
+
 }

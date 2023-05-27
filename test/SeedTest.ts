@@ -6,8 +6,8 @@ import { APIModule } from '../src/APIModule';
 import { BiblesService } from '../src/Bibles/BiblesService';
 import { BooksService } from '../src/Bibles/Books/BooksService';
 import { ChaptersService } from '../src/Bibles/Books/Chapters/ChaptersService';
-import { Bible } from '../src/Models/Bibles/Bible';
-import { Language } from '../src/Models/Languages/Language';
+import { Bible } from '../src/Dto/Bibles/Bible';
+import { Language } from '../src/Dto/Languages/Language';
 
 const data = require('/Users/matthewdavis/workspace/convictions.ai/data/bible/json/en_kjv.json');
 

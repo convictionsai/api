@@ -15,6 +15,18 @@ enum Language {
   EN
 }
 
+enum QAResultStatus {
+    ACTIVE
+    EXPIRED
+    BLOCKED
+    FAILED
+}
+
+enum QAHitType {
+    CACHE
+    LIVE
+}
+
 model Bible {
   id          String    @id @default(uuid())
   name        String
@@ -23,23 +35,26 @@ model Bible {
   Book        Book[]
   Chapter     Chapter[]
   Verse       Verse[]
+
+  @@unique([name, language])
 }
 
 model Book {
-  id          String    @id @default(uuid())
-  bible       Bible     @relation(fields: [bibleId], references: [id])
-  bibleId     String
-  name        String
-  description String
-  Chapter     Chapter[]
-  Verse       Verse[]
+  id                String    @id @default(uuid())
+  bible             Bible     @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bibleId           String
+  name              String
+  description       String
+  Chapter           Chapter[]
+  Verse             Verse[]
+  QAResultToBook    QAResultToBook[]
 }
 
 model Chapter {
   id          String  @id @default(uuid())
-  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bible       Bible   @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bibleId     String
-  book        Book    @relation(fields: [bookId], references: [id])
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookId      String
   number      Int
   name        String?
@@ -48,12 +63,32 @@ model Chapter {
 
 model Verse {
   id          String  @id @default(uuid())
-  bible       Bible   @relation(fields: [bibleId], references: [id])
+  bible       Bible   @relation(fields: [bibleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bibleId     String
-  book        Book    @relation(fields: [bookId], references: [id])
+  book        Book    @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bookId      String
   number      Int
   name        String?
   description String?
-  content     String
+  content     String  @db.Text
+}
+
+model QAResult {
+  id                String  @id @default(uuid())
+  hash              String
+  prompt            String  @db.Text
+  answer            String  @db.Text
+  tokens            Int
+  time              Int
+  status            QAResultStatus
+  hit               QAHitType
+  QAResultToBook    QAResultToBook[]
+}
+
+model QAResultToBook {
+  id          String  @id @default(uuid())
+  qAResultId  String
+  QAResult    QAResult  @relation(fields: [qAResultId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  bookId      String
+  Book        Book      @relation(fields: [bookId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

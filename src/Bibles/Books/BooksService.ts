@@ -1,53 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { from, Observable } from 'rxjs';
-import { DataSource, Repository } from 'typeorm';
-import { Bible } from '../../Models/Bibles/Bible';
-import { BibleCreate } from '../../Models/Bibles/BibleCreate';
-import { Book } from '../../Models/Bibles/Books/Book';
-import { BookCreate } from '../../Models/Bibles/Books/BookCreate';
+import { Prisma, Book } from '@prisma/client';
+import { PrismaService } from '../../Data/PrismaService';
 
 @Injectable()
 export class BooksService {
-    private readonly repository: Repository<Book>;
+    public constructor(private readonly prismaService: PrismaService) { }
 
-    public constructor(private readonly dataSource: DataSource) {
-        this.repository = dataSource.getRepository(Book);
+    private _book(bookWhereUniqueInput: Prisma.BookWhereUniqueInput): Promise<Book> {
+        return this.prismaService.book.findUniqueOrThrow({
+            where: bookWhereUniqueInput,
+        });
     }
 
-    public search(): Observable<Array<Book>> {
-        return from(
-            this.repository.find({
-                order: {
-                    name: 'ASC'
-                }
-            })
-        );
+    private _books(params: {
+        skip?: number;
+        take?: number;
+        cursor?: Prisma.BookWhereUniqueInput;
+        where?: Prisma.BookWhereInput;
+        orderBy?: Prisma.BookOrderByWithRelationInput;
+    }): Promise<Array<Book>> {
+        const { skip, take, cursor, where, orderBy } = params;
+        return this.prismaService.book.findMany({
+            skip,
+            take,
+            cursor,
+            where,
+            orderBy,
+        });
     }
 
-    public getById(id: string): Observable<Book> {
-        return from(
-            this.repository.findOneOrFail({
-                where: {
-                    id
-                }
-            })
-        );
+
+    public search(): Promise<Array<Book>> {
+        return this._books({ orderBy: { name: 'asc' } })
     }
 
-    public getByName(name: string): Observable<Book> {
-        return from(
-            this.repository.findOneOrFail({
-                where: {
-                    name
-                }
-            })
-        );
+    public getById(id: string): Promise<Book> {
+        return this._book({ id: id });
     }
 
-    public create(create: BookCreate) {
-        return this.repository.save({
-            bible: create.bible,
-            number: create.number,
+    public getByName(name: string): Promise<Book> {
+        // Only if the Book.name is unique, should this be used.
+        // return this._book({ name: name });
+
+        // Book.name is not unique, so this will return the first book with the given name.
+        return this.prismaService.book.findFirstOrThrow({
+            where: {
+                name: name,
+            },
+        });
+    }
+
+
+    public create(data: Prisma.BookCreateInput): Promise<Book> {
+
+        return this.prismaService.book.create({
+            data,
         });
     }
 

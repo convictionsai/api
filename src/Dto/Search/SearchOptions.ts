@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Book } from '../Bibles/Books/Book';
+import { Book } from '@prisma/client';
 
 export class SearchOptions {
     @ApiProperty()
